@@ -52,6 +52,4 @@ Thumbs.db
 
 # User add
 build/
-
-*.bat
 *.spec

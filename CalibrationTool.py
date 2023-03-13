@@ -6,6 +6,7 @@ import serial
 from serial.tools import list_ports
 import threading
 import numpy as np
+import matplotlib.pyplot as plt
 
 # 変数定義
 measure_flag = False
@@ -40,18 +41,28 @@ def button3_click():
 
 def button4_click():
     cnt = len(tree.get_children())
-    data = np.zeros([cnt,3])
-    for i,id in enumerate(tree.get_children()):
-        a = list(tree.item(id, "values"))
-        for j in range(3):
-            if a[j] == "":
-                a[j] = "0"
-            data[i][j] = float(a[j])
-    x = data[:,1]
-    y = data[:,0]
-    b = np.dot(x, y)/ (x ** 2).sum()
-    entry2.delete(0,len(entry2.get()))
-    entry2.insert(0,str(b))
+    if cnt >= 2:
+        data = np.zeros([cnt,3])
+        for i,id in enumerate(tree.get_children()):
+            a = list(tree.item(id, "values"))
+            for j in range(3):
+                if a[j] == "":
+                    a[j] = "0"
+                data[i][j] = float(a[j])
+        x = data[:,1]
+        y = data[:,0]
+        b = np.dot(x, y)/ (x ** 2).sum()
+        entry2.delete(0,len(entry2.get()))
+        entry2.insert(0,str(b))
+        plt.scatter(x, y, color="k", label="Measure result")
+        plt.xlabel("Sensor Raw Data")
+        plt.ylabel("After Unit Conversion(N)")
+        plt.plot([0,x.max()], [0, b * x.max()], label="Linear Approximation")
+        plt.legend()
+        plt.show()
+    else:
+        entry2.delete(0,len(entry2.get()))
+        entry2_text.set("2点以上測定してください")
 
 def button5_click():
     with open('Proofread.txt','r') as f:
@@ -120,13 +131,13 @@ def MeasureProcess():
             label6_text.set(str(i*5) + "%")
         var_avg = np.mean(var)
         var_stdev = np.std(var)
-        if var_stdev < 200 and var_stdev > -200:
+        if var_stdev < 500 and var_stdev > -500:
             var_ok_ng = "OK"
         else:
-            var_ok_ng = "再測定"
+            var_ok_ng = "要再測定"
         tree.insert("","end",values=(entry1.get(),var_avg,var_stdev,var_ok_ng))
     else:
-        tree.insert("","end",values=("","","通信エラー"))
+        tree.insert("","end",values=("","","通信エラー01"))
     ser.write(str.encode("2,0\r\n"))
     ser.close()
     
@@ -142,7 +153,7 @@ def SendProcess():
         with open('Proofread.txt','w') as f:
             f.write(str(entry2_text.get()))
     else:
-        label5_text.set("通信エラー")
+        label5_text.set("通信エラー02")
     ser.close()
     
 def ZeroSetProcess():
@@ -157,13 +168,13 @@ def ZeroSetProcess():
             button6_text.set(var_str)
         button6_text.set("開始")
     else:
-        button6_text.set("通信エラー")
+        button6_text.set("通信エラー03")
     
 
 # ===============================================================
 # フレームの作成
 root = tk.Tk()
-root.title("張力計キャリブレーションソフト ver1.0")
+root.title("張力計キャリブレーションソフト ver1.2")
 root.grid()
 frame1 = ttk.Frame(relief='raised')
 frame2 = ttk.Frame(relief='raised')
@@ -187,7 +198,7 @@ label6_text.set("")
 
 label1 = ttk.Label(frame1, text="接続先")
 label2 = ttk.Label(frame3, text="使用する重り")
-label3 = ttk.Label(frame3, text="kg")
+label3 = ttk.Label(frame3, text="N")
 label4 = ttk.Label(frame5, text="補正値")
 label5 = ttk.Label(frame5, textvariable=label5_text)
 label6 = ttk.Label(frame3, textvariable=label6_text)

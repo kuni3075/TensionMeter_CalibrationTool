@@ -53,4 +53,5 @@ Thumbs.db
 # User add
 build/
 リリース用/
+.vscode/
 *.spec

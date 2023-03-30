@@ -1,6 +1,5 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-import time
 from turtle import shape
 import serial
 from serial.tools import list_ports

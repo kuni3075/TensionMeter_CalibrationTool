@@ -1,1 +1,1 @@
-python setup.py build
+pyinstaller --clean --onefile --noconsole --icon=cotechworks_icon.ico CalibrationTool.py

@@ -7,10 +7,16 @@ import threading
 import numpy as np
 import matplotlib.pyplot as plt
 
-# 変数定義
+# 定数
+NORMAL = 0
+FAST = 1
+
+# 変数
 measure_flag = False
 send_flag = False
 zero_set_flag = False
+mode_change_flag = False
+mode = 0
 comport = ""
 weight = 0
 value = 0
@@ -73,11 +79,30 @@ def button6_click():
     button6.state(['pressed'])
     button6.state(['disabled'])
     zero_set_flag = True
+
+def button7_click():
+    global mode_change_flag
+    global mode
+    
+    mode = NORMAL
+    button7.state(['pressed'])
+    button7.state(['disabled'])
+    mode_change_flag = True
+
+def button8_click():
+    global mode_change_flag
+    global mode
+    
+    mode = FAST
+    button8.state(['pressed'])
+    button8.state(['disabled'])
+    mode_change_flag = True
     
 def SubLoop():
     global measure_flag
     global send_flag
     global zero_set_flag
+    global mode_change_flag
     global comport
     
     while True:
@@ -108,6 +133,13 @@ def SubLoop():
             zero_set_flag = False
             button6.state(['!disabled'])
             button6.state(['!pressed'])
+        elif mode_change_flag:
+            ModeChange()
+            mode_change_flag = False
+            button7.state(['!disabled'])
+            button8.state(['!disabled'])
+            button7.state(['!pressed'])
+            button8.state(['!pressed'])
         else:
             label6_text.set("")
 
@@ -167,6 +199,28 @@ def ZeroSetProcess():
         button6_text.set("開始")
     else:
         button6_text.set("通信エラー03")
+    ser.close()
+
+def ModeChange():
+    global mode
+    
+    var_str = ""
+    ser = serial.Serial(comport, 115200, timeout=0.5)
+    ser.reset_input_buffer()
+    
+    if mode == NORMAL:
+        ser.write(str.encode("2.0\r\n"))
+    elif mode == FAST:
+        ser.write(str.encode("2.1\r\n"))
+    
+    var_str = ser.readline().decode().replace("\r\n", "")
+    if var_str == "":
+        label9_text.set("通信エラー04")
+    else:
+        label9_text.set(var_str)
+    ser.close()
+    
+    
     
 
 # ===============================================================
@@ -179,6 +233,7 @@ frame2 = ttk.Frame(relief='raised')
 frame3 = ttk.Frame(relief='raised')
 frame4 = ttk.Frame(relief='raised')
 frame5 = ttk.Frame(relief='raised')
+frame6 = ttk.Frame(relief='raised')
 
 # フレームの設定
 frame1.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5)
@@ -186,6 +241,7 @@ frame2.grid(row=1, column=0, padx=5, pady=5, ipadx=5, ipady=5)
 frame3.grid(row=2, column=0, padx=5, pady=5, ipadx=5, ipady=5)
 frame4.grid(row=3, column=0, padx=5, pady=5, ipadx=5, ipady=5)
 frame5.grid(row=4, column=0, padx=5, pady=5, ipadx=5, ipady=5)
+frame6.grid(row=5, column=0, padx=5, pady=5, ipadx=5, ipady=5)
 
 # ===============================================================
 # ビューの作成
@@ -193,6 +249,8 @@ label5_text = tk.StringVar(frame5)
 label5_text.set("")
 label6_text = tk.StringVar(frame3)
 label6_text.set("")
+label9_text = tk.StringVar(frame6)
+label9_text.set("")
 
 label1 = ttk.Label(frame1, text="接続先")
 label2 = ttk.Label(frame3, text="使用する重り")
@@ -201,6 +259,8 @@ label4 = ttk.Label(frame5, text="補正値")
 label5 = ttk.Label(frame5, textvariable=label5_text)
 label6 = ttk.Label(frame3, textvariable=label6_text)
 label7 = ttk.Label(frame2, text="ゼロ点調整")
+label8 = ttk.Label(frame6, text="モード切り替え")
+label9 = ttk.Label(frame6, textvariable=label9_text)
 
 entry2_text = tk.StringVar(frame5)
 
@@ -220,6 +280,8 @@ button3 = ttk.Button(frame4, text="選択したデータの削除", command=butt
 button4 = ttk.Button(frame5, text="更新", command=button4_click)
 button5 = ttk.Button(frame5, text="前回の\n補正値", command=button5_click)
 button6 = ttk.Button(frame2, textvariable=button6_text, command=button6_click)
+button7 = ttk.Button(frame6, text="通常モード", command=button7_click)
+button8 = ttk.Button(frame6, text="衝撃試験モード", command=button8_click)
 
 combobox1 = ttk.Combobox(frame1, width=40, state="readonly", values=[])
 
@@ -275,6 +337,12 @@ button4.grid(row=0, column=2, padx=5, pady=5, ipadx=5, ipady=5)
 button5.grid(row=1, column=0, padx=5, pady=5, ipadx=5, ipady=5)
 label5.grid(row=1, column=1, padx=5, pady=5, ipadx=5, ipady=5)
 button2.grid(row=1, column=2, padx=5, pady=5, ipadx=5, ipady=5)
+
+#frame6
+label8.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5)
+label9.grid(row=0, column=1, padx=5, pady=5, ipadx=5, ipady=5)
+button7.grid(row=1, column=0, padx=10, pady=5, ipadx=5, ipady=5)
+button8.grid(row=1, column=1, padx=10, pady=5, ipadx=5, ipady=5)
 
 # ===============================================================
 

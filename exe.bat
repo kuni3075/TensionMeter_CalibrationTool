@@ -1,1 +1,0 @@
-pyinstaller CalibrationTool.py --onefile --noconsole

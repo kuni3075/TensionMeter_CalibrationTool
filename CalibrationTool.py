@@ -41,7 +41,7 @@ def button3_click():
 
 def button4_click():
     cnt = len(tree.get_children())
-    if cnt >= 2:
+    if cnt >= 1:
         data = np.zeros([cnt,3])
         for i,id in enumerate(tree.get_children()):
             a = list(tree.item(id, "values"))
@@ -52,8 +52,7 @@ def button4_click():
         x = data[:,1]
         y = data[:,0]
         b = np.dot(x, y)/ (x ** 2).sum()
-        entry2.delete(0,len(entry2.get()))
-        entry2.insert(0,str(b))
+        entry2_text.set(format(b, '.6g') + "\n")
         plt.scatter(x, y, color="k", label="Measure result")
         plt.xlabel("Sensor Raw Data")
         plt.ylabel("After Unit Conversion(N)")
@@ -62,7 +61,7 @@ def button4_click():
         plt.show()
     else:
         entry2.delete(0,len(entry2.get()))
-        entry2_text.set("2点以上測定してください")
+        entry2_text.set("1点以上測定してください")
 
 def button5_click():
     with open('Proofread.txt','r') as f:

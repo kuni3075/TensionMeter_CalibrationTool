@@ -54,4 +54,5 @@ Thumbs.db
 build/
 リリース用/
 .vscode/
+venv/
 *.spec

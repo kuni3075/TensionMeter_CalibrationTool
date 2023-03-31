@@ -237,11 +237,11 @@ frame6 = ttk.Frame(relief='raised')
 
 # フレームの設定
 frame1.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5)
-frame2.grid(row=1, column=0, padx=5, pady=5, ipadx=5, ipady=5)
-frame3.grid(row=2, column=0, padx=5, pady=5, ipadx=5, ipady=5)
-frame4.grid(row=3, column=0, padx=5, pady=5, ipadx=5, ipady=5)
-frame5.grid(row=4, column=0, padx=5, pady=5, ipadx=5, ipady=5)
-frame6.grid(row=5, column=0, padx=5, pady=5, ipadx=5, ipady=5)
+frame2.grid(row=0, column=1, padx=5, pady=5, ipadx=5, ipady=5)
+frame3.grid(row=1, column=1, padx=5, pady=5, ipadx=5, ipady=5)
+frame4.grid(row=2, column=1, padx=5, pady=5, ipadx=5, ipady=5)
+frame5.grid(row=3, column=1, padx=5, pady=5, ipadx=5, ipady=5)
+frame6.grid(row=1, column=0, padx=5, pady=5, ipadx=5, ipady=5)
 
 # ===============================================================
 # ビューの作成
